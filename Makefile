@@ -45,6 +45,7 @@ MBEDTLS_OBJS = aes aesce aesni aria asn1parse \
 TARGET     = mbedTLS
 LIBCOMPONENT = mbedTLS
 INCLUDES   = .
+HDRS      = ro_config
 CDEFINES   = -DMBEDTLS_CONFIG_FILE="\"ro_config.h\"" -DRISCOS
 CFLAGS     = ${C_NOWARN_NON_ANSI_INCLUDES}
 

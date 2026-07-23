@@ -3808,7 +3808,10 @@
  *
  * Module:  library/timing.c
  */
-#define MBEDTLS_TIMING_C
+/* RISC OS does not use the portable Unix/Windows timing backend. DTLS is not
+ * enabled in this configuration, so the optional timing module is not needed.
+ */
+//#define MBEDTLS_TIMING_C
 
 /**
  * \def MBEDTLS_VERSION_C

@@ -6,6 +6,9 @@ and the PSA crypto interface used by AcornSSL. The makefile selects the
 `CLibrary` rules under DDE32 and the `LibExport` rules under the current RISC OS
 build system.
 
+The RISC OS configuration disables the optional Unix/Windows timing module;
+DTLS is not enabled, so AcornSSL's TLS 1.2/1.3 operation does not require it.
+
 The RISC OS module metadata is version 3.66, matching the Mbed TLS 3.6.6
 source release. This directory is the working source tree for DDE/AMU builds:
 
