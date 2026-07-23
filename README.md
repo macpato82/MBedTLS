@@ -1,8 +1,10 @@
 # Mbed TLS for RISC OS
 
-This repository contains the RISC OS AMU `LibExport` port of Mbed TLS 3.6.6.
-It is configured for client-side TLS 1.2 and TLS 1.3, SNI, certificate
-verification, and the PSA crypto interface used by AcornSSL.
+This repository contains the RISC OS AMU port of Mbed TLS 3.6.6. It is
+configured for client-side TLS 1.2 and TLS 1.3, SNI, certificate verification,
+and the PSA crypto interface used by AcornSSL. The makefile selects the
+`CLibrary` rules under DDE32 and the `LibExport` rules under the current RISC OS
+build system.
 
 The RISC OS module metadata is version 3.66, matching the Mbed TLS 3.6.6
 source release. This directory is the working source tree for DDE/AMU builds:

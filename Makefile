@@ -18,37 +18,46 @@
 #
 
 COMPONENT  = mbedTLS
-OBJS       = o.aes o.aesce o.aesni o.aria o.asn1parse \
-             o.asn1write o.base64 o.bignum o.bignum_core o.bignum_mod \
-             o.bignum_mod_raw o.block_cipher o.camellia o.ccm o.chacha20 \
-             o.chachapoly o.cipher o.cipher_wrap o.cmac o.constant_time \
-             o.ctr_drbg o.debug o.des o.dhm o.ecdh o.ecdsa o.ecjpake \
-             o.ecp o.ecp_curves o.ecp_curves_new o.entropy o.entropy_poll \
-             o.error o.gcm o.hkdf o.hmac_drbg o.lmots o.lms o.md o.md5 \
-             o.memory_buffer_alloc o.mps_reader o.mps_trace o.net_sockets \
-             o.nist_kw o.oid o.padlock o.pem o.pk o.pk_ecc o.pk_wrap \
-             o.pkcs12 o.pkcs5 o.pkcs7 o.pkparse o.pkwrite o.platform \
-             o.platform_util o.poly1305 o.psa_crypto o.psa_crypto_aead \
-             o.psa_crypto_cipher o.psa_crypto_client \
-             o.psa_crypto_driver_wrappers_no_static o.psa_crypto_ecp \
-             o.psa_crypto_ffdh o.psa_crypto_hash o.psa_crypto_mac \
-             o.psa_crypto_pake o.psa_crypto_random o.psa_crypto_rsa \
-             o.psa_crypto_se o.psa_crypto_slot_management o.psa_crypto_storage \
-             o.psa_its_file o.psa_util o.ripemd160 o.rsa o.rsa_alt_helpers \
-             o.sha1 o.sha256 o.sha3 o.sha512 o.ssl_cache o.ssl_ciphersuites \
-             o.ssl_client o.ssl_cookie o.ssl_debug_helpers_generated o.ssl_msg \
-             o.ssl_ticket o.ssl_tls o.ssl_tls12_client o.ssl_tls12_server \
-             o.ssl_tls13_client o.ssl_tls13_generic o.ssl_tls13_keys \
-             o.ssl_tls13_server o.threading o.timing o.version \
-             o.version_features o.x509 o.x509_create o.x509_crl o.x509_crt \
-             o.x509_csr o.x509write o.x509write_crt o.x509write_csr
+MBEDTLS_OBJS = aes aesce aesni aria asn1parse \
+             asn1write base64 bignum bignum_core bignum_mod \
+             bignum_mod_raw block_cipher camellia ccm chacha20 \
+             chachapoly cipher cipher_wrap cmac constant_time \
+             ctr_drbg debug des dhm ecdh ecdsa ecjpake \
+             ecp ecp_curves ecp_curves_new entropy entropy_poll \
+             error gcm hkdf hmac_drbg lmots lms md md5 \
+             memory_buffer_alloc mps_reader mps_trace net_sockets \
+             nist_kw oid padlock pem pk pk_ecc pk_wrap \
+             pkcs12 pkcs5 pkcs7 pkparse pkwrite platform \
+             platform_util poly1305 psa_crypto psa_crypto_aead \
+             psa_crypto_cipher psa_crypto_client \
+             psa_crypto_driver_wrappers_no_static psa_crypto_ecp \
+             psa_crypto_ffdh psa_crypto_hash psa_crypto_mac \
+             psa_crypto_pake psa_crypto_random psa_crypto_rsa \
+             psa_crypto_se psa_crypto_slot_management psa_crypto_storage \
+             psa_its_file psa_util ripemd160 rsa rsa_alt_helpers \
+             sha1 sha256 sha3 sha512 ssl_cache ssl_ciphersuites \
+             ssl_client ssl_cookie ssl_debug_helpers_generated ssl_msg \
+             ssl_ticket ssl_tls ssl_tls12_client ssl_tls12_server \
+             ssl_tls13_client ssl_tls13_generic ssl_tls13_keys \
+             ssl_tls13_server threading timing version \
+             version_features x509 x509_create x509_crl x509_crt \
+             x509_csr x509write x509write_crt x509write_csr
 TARGET     = mbedTLS
 LIBCOMPONENT = mbedTLS
 INCLUDES   = .
 CDEFINES   = -DMBEDTLS_CONFIG_FILE="\"ro_config.h\"" -DRISCOS
 CFLAGS     = ${C_NOWARN_NON_ANSI_INCLUDES}
 
+# DDE32 provides C/C++$Dir and its CLibrary fragment expects bare object
+# names. The current RISC OS build system has LibExport and expects o.* names.
+DDE_CXX_DIR = ${C/C++$Dir}
+ifeq ("${DDE_CXX_DIR}","")
+OBJS = $(addprefix o.,${MBEDTLS_OBJS})
 include LibExport
+else
+OBJS = ${MBEDTLS_OBJS}
+include CLibrary
+endif
 
 ifeq (,${MAKE_VERSION})
 
