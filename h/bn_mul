@@ -21,10 +21,10 @@
  *         . Alpha                . MIPS32
  *         . C, longlong          . C, generic
  */
-#ifndef MBEDTLS_BN_MUL_H
-#define MBEDTLS_BN_MUL_H
+#ifndef TF_PSA_CRYPTO_BN_MUL_H
+#define TF_PSA_CRYPTO_BN_MUL_H
 
-#include "mbedtls/build_info.h"
+#include "tf-psa-crypto/build_info.h"
 
 #include "mbedtls/bignum.h"
 
@@ -238,12 +238,12 @@
 
 // The following assembly code assumes that a pointer will fit in a 64-bit register
 // (including ILP32 __aarch64__ ABIs such as on watchOS, hence the 2^32 - 1)
-#if defined(__aarch64__) && (UINTPTR_MAX == 0xfffffffful || UINTPTR_MAX == 0xfffffffffffffffful)
+#if defined(__aarch64__)
 
 /*
  * There are some issues around different compilers requiring different constraint
  * syntax for updating pointers from assembly code (see notes for
- * MBEDTLS_ASM_AARCH64_PTR_CONSTRAINT in common.h), especially on aarch64_32 (aka ILP32).
+ * MBEDTLS_ASM_AARCH64_PTR_CONSTRAINT in tf_psa_crypto_common.h), especially on aarch64_32 (aka ILP32).
  *
  * For this reason we cast the pointers to/from uintptr_t here.
  */
@@ -1091,4 +1091,4 @@
 #endif /* MULADDC_X8_CORE */
 
 /* *INDENT-ON* */
-#endif /* bn_mul.h */
+#endif /* TF_PSA_CRYPTO_BN_MUL_H */

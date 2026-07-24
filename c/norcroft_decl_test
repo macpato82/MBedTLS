@@ -1,0 +1,22 @@
+typedef unsigned int size_t;
+typedef unsigned char uint8_t;
+typedef struct slot_s slot_t;
+typedef int psa_status_t;
+void test(const uint8_t *input_external, size_t data_length)
+{
+    psa_status_t status;
+    const uint8_t *data = (const uint8_t *) 0;
+    slot_t *slot;
+    size_t bits;
+    size_t storage_size;
+    status = 0;
+    slot = (slot_t *) 0;
+    bits = 0;
+    storage_size = data_length;
+    (void) input_external;
+    (void) data;
+    (void) status;
+    (void) slot;
+    (void) bits;
+    (void) storage_size;
+}

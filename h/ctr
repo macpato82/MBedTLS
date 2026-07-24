@@ -7,10 +7,10 @@
  *  SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later
  */
 
-#ifndef MBEDTLS_CTR_H
-#define MBEDTLS_CTR_H
+#ifndef TF_PSA_CRYPTO_CTR_H
+#define TF_PSA_CRYPTO_CTR_H
 
-#include "common.h"
+#include "tf_psa_crypto_common.h"
 
 /**
  * \brief               Increment a big-endian 16-byte value.
@@ -20,10 +20,13 @@
  */
 static inline void mbedtls_ctr_increment_counter(uint8_t n[16])
 {
+    int i;
+    uint32_t x;
+
     // The 32-bit version seems to perform about the same as a 64-bit version
     // on 64-bit architectures, so no need to define a 64-bit version.
-    for (int i = 3;; i--) {
-        uint32_t x = MBEDTLS_GET_UINT32_BE(n, i << 2);
+    for (i = 3;; i--) {
+        x = MBEDTLS_GET_UINT32_BE(n, i << 2);
         x += 1;
         MBEDTLS_PUT_UINT32_BE(x, n, i << 2);
         if (x != 0 || i == 0) {
@@ -32,4 +35,4 @@ static inline void mbedtls_ctr_increment_counter(uint8_t n[16])
     }
 }
 
-#endif /* MBEDTLS_CTR_H */
+#endif /* TF_PSA_CRYPTO_CTR_H */

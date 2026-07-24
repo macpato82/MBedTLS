@@ -6,7 +6,7 @@
  *  SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-or-later
  */
 
-#include "common.h"
+#include "tf_psa_crypto_common.h"
 
 #if defined(MBEDTLS_PSA_CRYPTO_C)
 
@@ -18,12 +18,13 @@
 #include "psa_crypto_hash.h"
 #include "mbedtls/psa_util.h"
 
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
 #include "mbedtls/platform.h"
 
 #include <mbedtls/rsa.h>
-#include <mbedtls/error.h>
+#include <mbedtls/error_common.h>
 #include "rsa_internal.h"
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
@@ -42,18 +43,11 @@
 static psa_status_t psa_check_rsa_key_byte_aligned(
     const mbedtls_rsa_context *rsa)
 {
-    mbedtls_mpi n;
-    psa_status_t status;
-    mbedtls_mpi_init(&n);
-    status = mbedtls_to_psa_error(
-        mbedtls_rsa_export(rsa, &n, NULL, NULL, NULL, NULL));
-    if (status == PSA_SUCCESS) {
-        if (mbedtls_mpi_bitlen(&n) % 8 != 0) {
-            status = PSA_ERROR_NOT_SUPPORTED;
-        }
+    if (mbedtls_mpi_bitlen(&rsa->N) % 8 != 0) {
+        return PSA_ERROR_NOT_SUPPORTED;
     }
-    mbedtls_mpi_free(&n);
-    return status;
+
+    return PSA_SUCCESS;
 }
 
 psa_status_t mbedtls_psa_rsa_load_representation(
@@ -204,7 +198,6 @@ psa_status_t mbedtls_psa_rsa_export_public_key(
                                             data_size,
                                             data_length);
     }
-
     mbedtls_rsa_free(rsa);
     mbedtls_free(rsa);
 
@@ -362,13 +355,14 @@ psa_status_t mbedtls_psa_rsa_sign_hash(
         ret = mbedtls_rsa_set_padding(rsa, MBEDTLS_RSA_PKCS_V21, md_alg);
 
         if (ret == 0) {
-            ret = mbedtls_rsa_rsassa_pss_sign(rsa,
-                                              mbedtls_psa_get_random,
-                                              MBEDTLS_PSA_RANDOM_STATE,
-                                              MBEDTLS_MD_NONE,
-                                              (unsigned int) hash_length,
-                                              hash,
-                                              signature);
+            ret = mbedtls_rsa_rsassa_pss_sign_ext(rsa,
+                                                  mbedtls_psa_get_random,
+                                                  MBEDTLS_PSA_RANDOM_STATE,
+                                                  MBEDTLS_MD_NONE,
+                                                  (unsigned int) hash_length,
+                                                  hash,
+                                                  MBEDTLS_RSA_SALT_LEN_ANY,
+                                                  signature);
         }
     } else
 #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS */
@@ -394,14 +388,18 @@ static int rsa_pss_expected_salt_len(psa_algorithm_t alg,
                                      const mbedtls_rsa_context *rsa,
                                      size_t hash_length)
 {
+    int klen;
+    int hlen;
+    int room;
+
     if (PSA_ALG_IS_RSA_PSS_ANY_SALT(alg)) {
         return MBEDTLS_RSA_SALT_LEN_ANY;
     }
     /* Otherwise: standard salt length, i.e. largest possible salt length
      * up to the hash length. */
-    int klen = (int) mbedtls_rsa_get_len(rsa);   // known to fit
-    int hlen = (int) hash_length; // known to fit
-    int room = klen - 2 - hlen;
+    klen = (int) mbedtls_rsa_get_len(rsa);   // known to fit
+    hlen = (int) hash_length; // known to fit
+    room = klen - 2 - hlen;
     if (room < 0) {
         return 0;  // there is no valid signature in this case anyway
     } else if (room > hlen) {
